@@ -41,7 +41,7 @@ except ImportError:
     install_package("requests")
 
 # Configure the path to the Factorio installation
-#factorio_path = "/Users/dominikkargl/Documents/05_Unternehmen/05_Projekte/99_Factorio"
+#factorio_path = "Pfad/zu/Factorio"
 
 class FactorioUpdater:
     def __init__(self, factorio_path:str="/opt/factorio", backup_path:str="/Backups"):
