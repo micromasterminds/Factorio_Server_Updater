@@ -63,7 +63,7 @@ class FactorioUpdater:
             # Prüfen, ob der Befehl erfolgreich war
             if result.returncode == 0:
                 # Rückgabe der Ausgabe
-                return self.extract_version(result.stdout.strip())
+                self.current_version = self.extract_version(result.stdout.strip())
             else:
                 # Falls ein Fehler auftritt, die Fehlerausgabe anzeigen
                 return f"ERROR: When executing the command: {result.stderr.strip()}"
@@ -87,7 +87,6 @@ class FactorioUpdater:
             data = response.json()
             self.latest_version = data["stable"]["headless"]  # Gibt die neueste stabile Version zurück
             self.factorio_filename = f"factorio-headless_linux_{self.latest_version}.tar.xz"
-            return 0
         else:
             raise Exception("ERROR: Failed to fetch latest Factorio version.")
         
@@ -133,26 +132,31 @@ def ask_backup():
             return False
         print("Bitte antworte mit 'j' oder 'n'")
 
-# Beispielhafte Nutzung
-updater = FactorioUpdater()
-updater.check_latest_version()
-print("Neueste Factorio Version:", updater.latest_version)
+if __name__ == "__main__":
+    print("Factorio Updater")
+    updater = FactorioUpdater()
+    updater.check_latest_version()
+    print("Neueste Factorio Version: ", updater.latest_version)
 
-# Überprüfe die aktuell installierte Version
-current_version = updater.check_current_version()
-print("Installierte Factorio Version", current_version)
+    # Überprüfe die aktuell installierte Version
+    updater.check_current_version()
+    print("Installierte Factorio Version: ", updater.current_version)
 
-# Erstelle Backup
-if ask_backup():
-    print("Backup wird erstellt...")
-    updater.backup_factorio()
-else:
-    print("Kein Backup gewünscht, fahre fort...")
+    # Erstelle Backup
+    if ask_backup():
+        print("Backup wird erstellt...")
+        updater.backup_factorio()
+    else:
+        print("Kein Backup gewünscht, fahre fort...")
 
-# Beispielhafte Nutzung get_latest_version
-print("Lade neueste Version herunter...")
-latest_version = updater.get_latest_version()
+    # Beispielhafte Nutzung get_latest_version
+    if updater.latest_version == updater.current_version:
+        print("Keine neue Version verfügbar.")
+        exit()
+    else:
+        print("Lade neueste Version herunter...")
+        latest_version = updater.get_latest_version()
 
-# Entpacken der heruntergeladenen Datei
-extracted_path = os.path.join(os.path.dirname(latest_version))
-updater.extract_tarxz(latest_version, extracted_path)
+        # Entpacken der heruntergeladenen Datei
+        extracted_path = os.path.join(os.path.dirname(latest_version))
+        updater.extract_tarxz(latest_version, extracted_path)
